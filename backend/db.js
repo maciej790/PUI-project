@@ -1,25 +1,16 @@
-const express = require('express')
-const bodyParser = require('body-parser');
-const cors = require("cors");
-const auth = require('./routes/auth');
-const recipes = require('./routes/recipes')
-const meals = require('./routes/meals')
-const checkToken = require('./middlewares/auth/checkToken')
+const mysql = require('mysql2');
 
-const app = express()
-const port = process.env.PORT || 3000;
+const db = mysql.createConnection({
+  host: 'sql7.freesqldatabase.com',
+  user: 'sql7783874',
+  password: 'wVD523HCNh',
+  database: 'sql7783874',
+});
 
-app.use(cors({
-    origin: "*",
-    credentials: true
-  }));
+db.connect(err => {
+  if (err) {
+    console.error('❌ Błąd połączenia z MySQL:', err.message);
+  } 
+});
 
-app.use(bodyParser.json())
-
-//api root endpoints
-app.use('/auth', auth);
-app.use('/recipes', checkToken, recipes);
-app.use('/meals', checkToken, meals);
-
-
-app.listen(port, ()=> console.log(`App listening on port ${port}!`))
+module.exports = db;
