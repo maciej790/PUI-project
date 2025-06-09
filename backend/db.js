@@ -1,16 +1,25 @@
-const mysql = require('mysql2');
+const express = require('express')
+const bodyParser = require('body-parser');
+const cors = require("cors");
+const auth = require('./routes/auth');
+const recipes = require('./routes/recipes')
+const meals = require('./routes/meals')
+const checkToken = require('./middlewares/auth/checkToken')
 
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'fiteate',
-});
+const app = express()
+const port = process.env.PORT || 3000;
 
-db.connect(err => {
-  if (err) {
-    console.error('❌ Błąd połączenia z MySQL:', err.message);
-  } 
-});
+app.use(cors({
+    origin: "*",
+    credentials: true
+  }));
 
-module.exports = db;
+app.use(bodyParser.json())
+
+//api root endpoints
+app.use('/auth', auth);
+app.use('/recipes', checkToken, recipes);
+app.use('/meals', checkToken, meals);
+
+
+app.listen(port, ()=> console.log(`App listening on port ${port}!`))
